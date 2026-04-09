@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Collab Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="login">
+    <main class="auth-shell">
+      <section class="auth-card">
+        <h1>Welcome back</h1>
+        <p>Login to open your collaborative workspace.</p>
+
+        <form id="login-form" class="auth-form">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" required placeholder="you@example.com" />
+
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" required placeholder="Your password" />
+
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+        <p class="auth-switch">
+          New here?
+          <a href="signup.html">Create an account</a>
+        </p>
+        <p id="auth-message" class="message"></p>
+      </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="firebase.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

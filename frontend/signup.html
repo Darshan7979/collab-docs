@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | Collab Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-page="signup">
+    <main class="auth-shell">
+      <section class="auth-card">
+        <h1>Create account</h1>
+        <p>Start writing documents with live collaboration.</p>
+
+        <form id="signup-form" class="auth-form">
+          <label for="signup-name">Display name (optional)</label>
+          <input id="signup-name" type="text" placeholder="Your name" />
+
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" required placeholder="you@example.com" />
+
+          <label for="signup-password">Password</label>
+          <input
+            id="signup-password"
+            type="password"
+            required
+            minlength="6"
+            placeholder="Minimum 6 characters"
+          />
+
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+
+        <p class="auth-switch">
+          Already have an account?
+          <a href="login.html">Login</a>
+        </p>
+        <p id="auth-message" class="message"></p>
+      </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="firebase.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
