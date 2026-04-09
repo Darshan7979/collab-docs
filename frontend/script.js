@@ -127,7 +127,7 @@ function createDocCard(doc) {
   `;
 
   article.querySelector("button").addEventListener("click", () => {
-    window.location.href = `editor.html?id=${doc.documentId}`;
+    window.location.href = `editor.html?docId=${doc.documentId}`;
   });
 
   return article;
@@ -170,7 +170,7 @@ function setupDashboard() {
           })
         });
 
-        window.location.href = `editor.html?id=${newDoc.documentId}`;
+        window.location.href = `editor.html?docId=${newDoc.documentId}`;
       } catch (error) {
         setMessage("dashboard-message", error.message, "error");
       }
@@ -183,9 +183,10 @@ function setupDashboard() {
 function setupEditor() {
   protectRoute((user) => {
     const params = new URLSearchParams(window.location.search);
-    const documentId = params.get("id");
+    // Prefer docId for share links, but keep id fallback for old links.
+    const docId = params.get("docId") || params.get("id");
 
-    if (!documentId) {
+    if (!docId) {
       window.location.href = "dashboard.html";
       return;
     }
@@ -193,6 +194,12 @@ function setupEditor() {
     const statusElId = "editor-status";
     const titleInput = document.getElementById("doc-title");
     const saveBtn = document.getElementById("save-now-btn");
+    const shareBtn = document.getElementById("share-link-btn");
+    const addUserEmailInput = document.getElementById("add-user-email");
+    const addUserBtn = document.getElementById("add-user-btn");
+    const docIdDisplay = document.getElementById("doc-id-display");
+
+    docIdDisplay.textContent = docId;
 
     const quill = new Quill("#editor", {
       theme: "snow",
@@ -204,11 +211,30 @@ function setupEditor() {
     quill.disable();
     setMessage(statusElId, "Loading document...");
 
+    // Check access using REST first so we can show clear unauthorized message.
+    apiRequest(`/api/documents/${docId}?userEmail=${encodeURIComponent(user.email)}`)
+      .then((doc) => {
+        titleInput.value = doc.title || "Untitled Document";
+      })
+      .catch((error) => {
+        if (error.message.toLowerCase().includes("not found")) {
+          // If missing, socket join will create this document automatically.
+          return;
+        }
+
+        setMessage(statusElId, error.message, "error");
+      });
+
     const socket = io(BACKEND_URL);
 
     socket.emit("join-document", {
-      documentId,
+      docId,
       userEmail: user.email
+    });
+
+    socket.on("document-unauthorized", ({ message }) => {
+      setMessage(statusElId, message || "Unauthorized", "error");
+      quill.disable();
     });
 
     socket.on("document-load", (payload) => {
@@ -237,24 +263,63 @@ function setupEditor() {
       // Only send user-generated edits to avoid feedback loops.
       if (source !== "user") return;
 
-      socket.emit("send-changes", { documentId, delta });
+      socket.emit("send-changes", { docId, delta });
+    });
+
+    shareBtn.addEventListener("click", async () => {
+      // Always share a clean canonical link format.
+      const shareUrl = `${window.location.origin}${window.location.pathname}?docId=${encodeURIComponent(docId)}`;
+
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        window.alert("Link copied");
+      } catch (_error) {
+        // Fallback if clipboard API is not available.
+        window.prompt("Copy this link:", shareUrl);
+      }
+    });
+
+    addUserBtn.addEventListener("click", async () => {
+      const userEmailToAdd = addUserEmailInput.value.trim();
+
+      if (!userEmailToAdd) {
+        setMessage(statusElId, "Please enter an email", "error");
+        return;
+      }
+
+      try {
+        await apiRequest(`/api/documents/${docId}/allow-user`, {
+          method: "POST",
+          body: JSON.stringify({
+            requesterEmail: user.email,
+            userEmailToAdd
+          })
+        });
+
+        addUserEmailInput.value = "";
+        setMessage(statusElId, "User added successfully", "ok");
+      } catch (error) {
+        setMessage(statusElId, error.message, "error");
+      }
     });
 
     async function saveDocument() {
       try {
         const payload = {
           title: titleInput.value.trim() || "Untitled Document",
-          content: quill.root.innerHTML
+          content: quill.root.innerHTML,
+          userEmail: user.email
         };
 
-        await apiRequest(`/api/documents/${documentId}`, {
+        await apiRequest(`/api/documents/${docId}`, {
           method: "PUT",
           body: JSON.stringify(payload)
         });
 
         // Also push through socket so server receives last version quickly.
         socket.emit("save-document", {
-          documentId,
+          docId,
+          userEmail: user.email,
           ...payload
         });
 

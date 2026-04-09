@@ -36,49 +36,81 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
 
-  socket.on("join-document", async ({ documentId, userEmail }) => {
-    if (!documentId) {
+  socket.on("join-document", async ({ docId, documentId, userEmail }) => {
+    // Support both names, but docId is preferred in frontend.
+    const roomId = docId || documentId;
+
+    if (!roomId) {
       return;
     }
 
-    socket.join(documentId);
-
     // Ensure the document exists so first collaborator can start immediately.
-    let doc = await Document.findOne({ documentId });
+    let doc = await Document.findOne({ documentId: roomId });
     if (!doc) {
       doc = await Document.create({
-        documentId,
+        documentId: roomId,
         title: "Untitled Document",
         content: "",
-        createdBy: userEmail || "unknown"
+        createdBy: userEmail || "unknown",
+        allowedUsers: userEmail ? [userEmail] : []
       });
     }
 
+    const canAccess =
+      userEmail && (doc.createdBy === userEmail || doc.allowedUsers.includes(userEmail));
+
+    if (!canAccess) {
+      socket.emit("document-unauthorized", {
+        message: "You are not allowed to access this document"
+      });
+      return;
+    }
+
+    socket.join(roomId);
+
     socket.emit("document-load", {
+      documentId: doc.documentId,
       title: doc.title,
       content: doc.content
     });
 
-    socket.to(documentId).emit("presence-update", {
+    socket.to(roomId).emit("presence-update", {
       message: `${userEmail || "A user"} joined this document`
     });
   });
 
-  socket.on("send-changes", ({ documentId, delta }) => {
-    if (!documentId || !delta) {
+  socket.on("send-changes", ({ docId, documentId, delta }) => {
+    const roomId = docId || documentId;
+
+    if (!roomId || !delta) {
       return;
     }
 
-    socket.to(documentId).emit("receive-changes", delta);
+    socket.to(roomId).emit("receive-changes", delta);
   });
 
-  socket.on("save-document", async ({ documentId, content, title }) => {
-    if (!documentId) {
+  socket.on("save-document", async ({ docId, documentId, content, title, userEmail }) => {
+    const roomId = docId || documentId;
+
+    if (!roomId) {
+      return;
+    }
+
+    const doc = await Document.findOne({ documentId: roomId });
+
+    if (!doc) {
+      return;
+    }
+
+    const canAccess =
+      userEmail && (doc.createdBy === userEmail || doc.allowedUsers.includes(userEmail));
+
+    if (!canAccess) {
       return;
     }
 
     await Document.findOneAndUpdate(
-      { documentId },
+      { documentId: roomId },
       {
         $set: {
           content: typeof content === "string" ? content : "",

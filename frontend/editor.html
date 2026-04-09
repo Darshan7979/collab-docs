@@ -15,12 +15,21 @@
   </head>
   <body data-page="editor">
     <header class="navbar">
-      <div class="editor-title-group">
-        <input id="doc-title" class="title-input" value="Untitled Document" />
-        <p class="subtitle">Collaborative editor</p>
+      <div class="brand-wrap editor-head-wrap">
+        <img
+          src="assets/syncdocs-logo.png"
+          alt="SyncDocs logo"
+          class="brand-logo"
+          onerror="this.onerror=null;this.src='assets/syncdocs-logo.svg';"
+        />
+        <div class="editor-title-group">
+          <input id="doc-title" class="title-input" value="Untitled Document" />
+          <p class="subtitle">Collaborative editor</p>
+        </div>
       </div>
       <div class="nav-actions">
         <span class="user-pill">Signed in as <strong class="js-user-email">...</strong></span>
+        <button id="share-link-btn" class="btn btn-secondary">Share</button>
         <button id="save-now-btn" class="btn btn-secondary">Save Now</button>
         <a href="dashboard.html" class="btn btn-ghost">Dashboard</a>
         <button class="btn btn-ghost js-logout-btn">Logout</button>
@@ -28,6 +37,14 @@
     </header>
 
     <main class="editor-shell">
+      <section class="collab-bar">
+        <p class="doc-id-text">Document ID: <strong id="doc-id-display">...</strong></p>
+        <div class="add-people-wrap">
+          <input id="add-user-email" type="email" placeholder="Enter user email" />
+          <button id="add-user-btn" class="btn btn-primary">Add User</button>
+        </div>
+      </section>
+
       <div id="toolbar-container">
         <span class="ql-formats">
           <select class="ql-header">

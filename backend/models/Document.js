@@ -23,6 +23,11 @@ const documentSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  // Users listed here (plus owner) are allowed to open/edit this document.
+  allowedUsers: {
+    type: [String],
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now
