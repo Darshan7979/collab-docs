@@ -3,53 +3,106 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign Up | Collab Docs</title>
+    <title>Sign Up | SyncDocs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="auth-style.css" />
   </head>
   <body data-page="signup">
-    <main class="auth-shell">
-      <section class="auth-card">
-        <div class="auth-logo-wrap">
-          <img
-            src="assets/SyncDocs%20collaborative%20logo%20design.png"
-            alt="SyncDocs logo"
-            class="auth-logo"
-          />
+    <!-- Back Button -->
+    <a href="landing.html" class="auth-back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back
+    </a>
+
+    <!-- Auth Container -->
+    <main class="auth-container">
+      
+      <div class="auth-card-dark">
+        <div class="auth-logo-section">
+          <img src="assets/SyncDocs%20collaborative%20logo%20design.png" alt="SyncDocs logo" class="auth-card-logo" />
         </div>
-        <h1>Create account</h1>
-        <p>Start writing documents with live collaboration.</p>
 
-        <form id="signup-form" class="auth-form">
-          <label for="signup-name">Display name (optional)</label>
-          <input id="signup-name" type="text" placeholder="Your name" />
 
-          <label for="signup-email">Email</label>
-          <input id="signup-email" type="email" required placeholder="you@example.com" />
 
-          <label for="signup-password">Password</label>
-          <input
-            id="signup-password"
-            type="password"
-            required
-            minlength="6"
-            placeholder="Minimum 6 characters"
-          />
+        <div class="auth-header">
+          <h1 class="auth-title">Create your account</h1>
+          <p class="auth-subtitle">Start collaborating in real-time today</p>
+        </div>
 
-          <button type="submit" class="btn btn-primary">Sign Up</button>
+        <p id="auth-message" class="message-dark"></p>
+
+        <!-- Google Sign In -->
+        <button class="btn-google" id="google-signup-btn">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M19.6 10.227c0-.709-.064-1.39-.182-2.045H10v3.868h5.382a4.6 4.6 0 01-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.35z" fill="#4285F4"/>
+            <path d="M10 20c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H1.064v2.59A9.996 9.996 0 0010 20z" fill="#34A853"/>
+            <path d="M4.405 11.9c-.2-.6-.314-1.24-.314-1.9 0-.66.114-1.3.314-1.9V5.51H1.064A9.996 9.996 0 000 10c0 1.614.386 3.14 1.064 4.49l3.34-2.59z" fill="#FBBC05"/>
+            <path d="M10 3.977c1.468 0 2.786.505 3.823 1.496l2.868-2.868C14.959.99 12.695 0 10 0 6.09 0 2.71 2.24 1.064 5.51l3.34 2.59C5.19 5.736 7.395 3.977 10 3.977z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <div class="divider">
+          <span class="divider-text">or continue with email</span>
+        </div>
+
+        <!-- Signup Form -->
+        <form id="signup-form" class="auth-form-dark">
+          <div class="form-group">
+            <label for="signup-name" class="form-label">Display name (optional)</label>
+            <input 
+              id="signup-name" 
+              type="text" 
+              placeholder="Your name"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="signup-email" class="form-label">Email address</label>
+            <input 
+              id="signup-email" 
+              type="email" 
+              required 
+              placeholder="name@company.com"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="signup-password" class="form-label">Password</label>
+            <input 
+              id="signup-password" 
+              type="password" 
+              required 
+              minlength="6"
+              placeholder="Minimum 6 characters"
+              class="form-input"
+            />
+          </div>
+
+          <button type="submit" class="btn-primary-dark">
+            Create Account
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </form>
 
-        <p class="auth-switch">
-          Already have an account?
-          <a href="login.html">Login</a>
+        <p class="auth-footer">
+          Already have an account? 
+          <a href="login.html" class="auth-link">Sign in</a>
         </p>
-        <p id="auth-message" class="message"></p>
-      </section>
+
+      </div>
     </main>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
