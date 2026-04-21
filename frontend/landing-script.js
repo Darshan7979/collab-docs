@@ -13,38 +13,33 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Add scroll animation to navbar
-let lastScroll = 0;
 const navbar = document.querySelector('.navbar-landing');
 
 window.addEventListener('scroll', () => {
-  const currentScroll = window.pageYOffset;
-  
-  if (currentScroll > 100) {
-    navbar.style.background = 'rgba(11, 26, 64, 0.9)';
-    navbar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+  if (window.scrollY > 50) {
+    navbar.classList.add('scrolled');
   } else {
-    navbar.style.background = 'rgba(11, 26, 64, 0.6)';
-    navbar.style.boxShadow = 'none';
+    navbar.classList.remove('scrolled');
   }
-  
-  lastScroll = currentScroll;
 });
 
-// Intersection Observer for feature cards
-const observerOptions = {
+// Unified Intersection Observer for scroll reveal animations
+const revealOptions = {
   threshold: 0.1,
   rootMargin: '0px 0px -50px 0px'
 };
 
-const observer = new IntersectionObserver((entries) => {
+const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.style.opacity = '1';
-      entry.target.style.transform = 'translateY(0)';
+      entry.target.classList.add('active');
+      revealObserver.unobserve(entry.target); // Optional: only animate once
     }
   });
-}, observerOptions);
+}, revealOptions);
 
-document.querySelectorAll('.feature-card').forEach(card => {
-  observer.observe(card);
+// Auto-attach reveal class to key elements
+document.querySelectorAll('.feature-card, .step-card, .section-title, .section-subtitle, .cta-container').forEach(el => {
+  el.classList.add('reveal');
+  revealObserver.observe(el);
 });
