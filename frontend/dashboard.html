@@ -6,35 +6,489 @@
     <title>Dashboard | SyncDocs</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: 'Geist', sans-serif;
+        background: #f5f5f3;
+        color: #111;
+        min-height: 100vh;
+      }
+
+      /* ── Navbar ── */
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #fff;
+        border-bottom: 0.5px solid #e5e5e3;
+        animation: navSlideIn .45s ease-out;
+      }
+
+      .navbar-inner {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        min-height: 56px;
+        padding: 0.75rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .navbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .navbar-back-btn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        height: 34px;
+        padding: 0 12px;
+        border-radius: 7px;
+        border: 0.5px solid #e0e0de;
+        background: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+        cursor: pointer;
+        font-family: 'Geist', sans-serif;
+        transition: all .12s;
+        white-space: nowrap;
+      }
+
+      .navbar-back-btn:hover { background: #f5f5f3; color: #111; border-color: #ccc; }
+
+      .navbar-back-btn {
+        animation: backButtonPop .55s ease-out .08s both;
+      }
+
+      .back-icon { font-size: 12px; line-height: 1; }
+
+      .nav-divider {
+        width: 1px;
+        height: 22px;
+        background: #e8e8e6;
+        flex-shrink: 0;
+      }
+
+      .brand-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: brandReveal .55s ease-out .14s both;
+      }
+
+      .brand-logo-sq {
+        width: 28px;
+        height: 28px;
+        background: #4338ca;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.5px;
+      }
+
+      .brand-logo-sq svg { width: 16px; height: 16px; fill: white; }
+
+      /* If using actual img tag, keep it small */
+      .brand-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+        object-fit: cover;
+        background: #fff;
+        border: 0.5px solid #ececea;
+        padding: 2px;
+      }
+
+      .brand {
+        font-size: 17px;
+        font-weight: 700;
+        color: #111;
+        letter-spacing: -0.45px;
+        line-height: 1;
+      }
+
+      /* ── Navbar right ── */
+      .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: rightActionsIn .5s ease-out .2s both;
+      }
+
+      .user-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 12px 6px 6px;
+        border-radius: 20px;
+        background: #f5f5f3;
+        border: 0.5px solid #e5e5e3;
+        font-size: 13px;
+        color: #555;
+        white-space: nowrap;
+        max-width: 360px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #4338ca;
+        color: #fff;
+        font-size: 9px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .js-user-email { font-weight: 500; color: #333; }
+
+      .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 9px 14px;
+        border-radius: 9px;
+        border: 0.5px solid #e0e0de;
+        background: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        color: #555;
+        cursor: pointer;
+        font-family: 'Geist', sans-serif;
+        transition: all .12s;
+        white-space: nowrap;
+      }
+
+      .btn-ghost:hover { background: #f5f5f3; color: #111; border-color: #ccc; }
+
+      .navbar-right .js-logout-btn {
+        height: 42px;
+        padding: 0 18px;
+        font-size: 15px;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+
+      /* ── Main page ── */
+      .page-wrap {
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 24px 28px 48px;
+      }
+
+      /* ── Dashboard header row ── */
+      .dashboard-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        gap: 16px;
+        animation: sectionFadeUp .55s ease-out .2s both;
+      }
+
+      .dashboard-actions h2 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111;
+        letter-spacing: -0.4px;
+        line-height: 1;
+      }
+
+      .dashboard-actions .doc-count {
+        font-size: 12px;
+        color: #aaa;
+        font-weight: 400;
+        margin-top: 4px;
+      }
+
+      .dashboard-action-buttons {
+        display: flex;
+        align-items: center;
+        flex-direction: row !important;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 7px;
+        border: none;
+        background: #4338ca;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: 'Geist', sans-serif;
+        transition: opacity .12s;
+        white-space: nowrap;
+      }
+
+      .btn-primary:hover { opacity: .8; }
+
+      .dashboard-action-buttons #new-doc-btn,
+      .dashboard-action-buttons #refresh-docs-btn {
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      }
+
+      .dashboard-action-buttons #new-doc-btn:hover,
+      .dashboard-action-buttons #refresh-docs-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(17, 24, 39, 0.08);
+      }
+
+      .dashboard-action-buttons #refresh-docs-btn svg {
+        transition: transform .35s ease;
+      }
+
+      .dashboard-action-buttons #refresh-docs-btn:hover svg {
+        transform: rotate(-22deg);
+      }
+
+      /* ── Document grid ── */
+      .doc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+      }
+
+      /* ── Doc card (injected by script.js) ── */
+      .doc-card {
+        background: #fff;
+        border: 0.5px solid #e5e5e3;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: border-color .18s, transform .18s, box-shadow .18s;
+        animation: cardRiseIn .46s ease-out both;
+        animation-delay: calc(var(--card-index, 0) * 65ms + .12s);
+      }
+
+      .doc-card:hover {
+        border-color: #c9cfd8;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      }
+
+      .doc-card-thumb {
+        height: 56px;
+        padding: 10px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        justify-content: center;
+      }
+
+      .doc-card-thumb .line { height: 4px; border-radius: 2px; }
+      .doc-card-thumb .line.h { height: 6px; }
+
+      .doc-card-body { padding: 10px 12px 12px; border-top: 0.5px solid #f0f0ee; }
+
+      .doc-card-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #111;
+        letter-spacing: -0.3px;
+        text-transform: capitalize;
+        margin-bottom: 2px;
+      }
+
+      .doc-card-time { font-size: 10px; color: #bbb; margin-bottom: 10px; }
+
+      .doc-card-btns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .doc-card-btns button {
+        padding: 4px 10px;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: 'Geist', sans-serif;
+        border: 0.5px solid;
+        text-align: center;
+        transition: all .12s;
+      }
+
+      .btn-open  { background: #4338ca; color: #fff; border-color: #4338ca; }
+      .btn-open:hover { background: #3730a3; }
+      .btn-rename { background: #fff; color: #444; border-color: #e0e0de; }
+      .btn-rename:hover { background: #f5f5f3; }
+      .btn-copy  { background: #fff; color: #444; border-color: #e0e0de; }
+      .btn-copy:hover { background: #f5f5f3; }
+      .btn-delete { background: #fff; color: #c0392b; border-color: #f5c6c3; }
+      .btn-delete:hover { background: #fff5f4; border-color: #e0a09a; }
+
+      /* ── Empty / add card ── */
+      .doc-card-add {
+        background: transparent;
+        border: 1px dashed #d8d8d6;
+        border-radius: 10px;
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        cursor: pointer;
+        transition: all .15s;
+        color: #ccc;
+      }
+
+      .doc-card-add:hover { border-color: #999; color: #888; background: #fafaf9; }
+
+      .add-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1.5px dashed currentColor;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .add-label { font-size: 11px; font-weight: 500; }
+
+      /* ── Message ── */
+      .message {
+        margin-top: 20px;
+        font-size: 13px;
+        color: #aaa;
+        text-align: center;
+      }
+
+      @keyframes navSlideIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes backButtonPop {
+        from { opacity: 0; transform: translateY(-6px) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes brandReveal {
+        from { opacity: 0; transform: translateX(-8px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes rightActionsIn {
+        from { opacity: 0; transform: translateX(8px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+
+      @keyframes sectionFadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes cardRiseIn {
+        from { opacity: 0; transform: translateY(12px) scale(0.985); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .navbar,
+        .navbar-back-btn,
+        .brand-wrap,
+        .navbar-right,
+        .dashboard-actions,
+        .doc-card {
+          animation: none !important;
+        }
+
+        .dashboard-action-buttons #new-doc-btn,
+        .dashboard-action-buttons #refresh-docs-btn,
+        .dashboard-action-buttons #refresh-docs-btn svg,
+        .doc-card {
+          transition: none !important;
+        }
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 600px) {
+        .navbar-inner { padding: 8px 12px; }
+        .page-wrap { padding: 24px 12px 48px; }
+        .dashboard-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
+        .dashboard-action-buttons {
+          width: 100%;
+          justify-content: flex-start;
+          flex-wrap: wrap;
+        }
+        .user-pill { display: none; }
+      }
+    </style>
   </head>
   <body data-page="dashboard">
+
     <header class="navbar">
-      <div class="brand-wrap">
-        <img
-          src="assets/SyncDocs%20collaborative%20logo%20design.png"
-          alt="SyncDocs logo"
-          class="brand-logo"
-        />
-        <div>
-          <h1 class="brand">SyncDocs</h1>
-          <p class="subtitle">Write together in real-time</p>
+      <div class="navbar-inner">
+        <div class="navbar-left">
+          <button id="dashboard-back-btn" class="navbar-back-btn btn-ghost" type="button">
+            <span class="back-icon" aria-hidden="true">&#8592;</span>
+            <span>Back</span>
+          </button>
+          <div class="nav-divider"></div>
+          <div class="brand-wrap">
+            <h1 class="brand">SyncDocs</h1>
+          </div>
         </div>
-      </div>
-      <div class="nav-actions">
-        <span class="user-pill">Signed in as <strong class="js-user-email">...</strong></span>
-        <button class="btn btn-ghost js-logout-btn">Logout</button>
+
+        <div class="nav-actions navbar-right">
+          <div class="user-pill">
+            <div class="user-avatar js-user-initials">?</div>
+            Signed in as <strong class="js-user-email">...</strong>
+          </div>
+          <button class="btn-ghost js-logout-btn">Logout</button>
+        </div>
       </div>
     </header>
 
     <main class="page-wrap">
       <section class="dashboard-actions">
-        <h2>Your Documents</h2>
-        <button id="new-doc-btn" class="btn btn-primary">+ New Document</button>
+        <div>
+          <h2>Your documents</h2>
+          <p class="doc-count js-doc-count"></p>
+        </div>
+        <div class="dashboard-action-buttons">
+          <button id="refresh-docs-btn" class="btn-ghost">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+            Refresh
+          </button>
+          <button id="new-doc-btn" class="btn-primary">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New document
+          </button>
+        </div>
       </section>
 
       <section id="doc-list" class="doc-grid"></section>

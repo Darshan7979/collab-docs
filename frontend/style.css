@@ -228,7 +228,7 @@ input:focus {
 }
 
 .brand {
-  font-family: 'Outfit', 'Inter', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: clamp(1.4rem, 3vw, 1.9rem);
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -299,6 +299,17 @@ input:focus {
   animation: slideInFromLeft 400ms ease;
 }
 
+.dashboard-action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.dashboard-action-buttons .btn {
+  min-width: 170px;
+}
+
 .doc-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -312,11 +323,23 @@ input:focus {
   border-radius: 14px;
   padding: 20px;
   box-shadow: var(--shadow);
-  animation: riseIn 350ms ease;
+  animation: dashboardCardIn 420ms ease both;
+  animation-delay: calc(var(--card-index, 0) * 55ms);
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+}
+
+@keyframes dashboardCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .doc-card::after {
@@ -352,6 +375,204 @@ input:focus {
   font-size: 0.86rem;
   margin-bottom: 10px;
   color: var(--ink-hint);
+}
+
+body[data-page="dashboard"] {
+  background: #f3f5fa;
+}
+
+body[data-page="dashboard"] .navbar {
+  min-height: 82px;
+  padding: 0;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: none;
+  backdrop-filter: none;
+  animation: none;
+}
+
+body[data-page="dashboard"] .navbar-inner {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  min-height: 82px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body[data-page="dashboard"] .navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+body[data-page="dashboard"] .navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+body[data-page="dashboard"] .navbar-back-btn {
+  min-width: 98px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 116, 139, 0.35);
+  border-left: 3px solid rgba(37, 99, 235, 0.35);
+  background: transparent;
+  color: #334155;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+body[data-page="dashboard"] .navbar-back-btn:hover {
+  background: rgba(37, 99, 235, 0.06);
+  border-color: rgba(37, 99, 235, 0.35);
+  transform: none;
+}
+
+body[data-page="dashboard"] .navbar-back-btn .back-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+body[data-page="dashboard"] .navbar-left .brand-wrap {
+  gap: 8px;
+  width: auto;
+}
+
+body[data-page="dashboard"] .navbar-left .brand-logo {
+  width: 30px;
+  height: 30px;
+}
+
+body[data-page="dashboard"] .navbar-left .brand {
+  margin: 0;
+  font-size: 1.95rem;
+  line-height: 1;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+body[data-page="dashboard"] .navbar-left .subtitle {
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  color: #64748b;
+}
+
+body[data-page="dashboard"] .navbar-right .user-pill {
+  margin: 0;
+  padding: 9px 16px;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  border-radius: 999px;
+  max-width: 390px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body[data-page="dashboard"] .navbar-right .btn {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+}
+
+body[data-page="dashboard"] .page-wrap {
+  max-width: 1240px;
+  padding: 30px 24px 56px;
+}
+
+body[data-page="dashboard"] .dashboard-actions {
+  margin-bottom: 24px;
+}
+
+body[data-page="dashboard"] .dashboard-actions h2 {
+  font-size: clamp(1.7rem, 2.1vw, 2.1rem);
+  font-weight: 800;
+}
+
+body[data-page="dashboard"] #new-doc-btn {
+  padding: 12px 22px;
+  font-size: 0.98rem;
+}
+
+body[data-page="dashboard"] .doc-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+body[data-page="dashboard"] .doc-card {
+  min-height: 182px;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+body[data-page="dashboard"] .doc-card h3 {
+  font-size: clamp(1.9rem, 2.2vw, 2.2rem);
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+
+body[data-page="dashboard"] .doc-meta {
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+}
+
+body[data-page="dashboard"] .doc-card .btn {
+  align-self: flex-start;
+  width: auto;
+  min-width: 132px;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+}
+
+body[data-page="dashboard"] .doc-title {
+  transition: transform 220ms ease;
+}
+
+body[data-page="dashboard"] .doc-card:hover .doc-title {
+  transform: translateX(2px);
+}
+
+body[data-page="dashboard"] .doc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+body[data-page="dashboard"] .doc-action-btn {
+  min-width: 98px;
+  padding: 9px 14px;
+  font-size: 0.85rem;
+}
+
+body[data-page="dashboard"] .doc-action-delete {
+  color: #b42318;
+  border-color: rgba(180, 35, 24, 0.28);
+  background: #fff;
+}
+
+body[data-page="dashboard"] .doc-action-delete:hover {
+  background: #b42318;
+  border-color: #b42318;
+  color: #fff;
 }
 
 .message {
@@ -529,6 +750,49 @@ input:focus {
   .dashboard-actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  body[data-page="dashboard"] .navbar-inner {
+    max-width: none;
+    padding: 8px 12px;
+    height: auto;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px 10px;
+  }
+
+  body[data-page="dashboard"] .navbar {
+    height: auto;
+    min-height: 64px;
+  }
+
+  body[data-page="dashboard"] .navbar-left,
+  body[data-page="dashboard"] .navbar-right {
+    width: 100%;
+  }
+
+  body[data-page="dashboard"] .navbar-left {
+    justify-content: flex-start;
+  }
+
+  body[data-page="dashboard"] .navbar-right {
+    justify-content: space-between;
+  }
+
+  body[data-page="dashboard"] .navbar-right .user-pill {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .dashboard-action-buttons {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .dashboard-action-buttons .btn {
+    width: 100%;
   }
 
   .title-input {

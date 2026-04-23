@@ -122,6 +122,23 @@ io.on("connection", (socket) => {
     );
   });
 
+  // ── Live Chat ──
+  socket.on("send-chat", ({ docId, documentId, author, text }) => {
+    const roomId = docId || documentId;
+    if (!roomId || !text) return;
+
+    const message = {
+      author: author || "Anonymous",
+      text: text.trim(),
+      timestamp: new Date().toISOString()
+    };
+
+    // Broadcast to everyone else in the room
+    socket.to(roomId).emit("receive-chat", message);
+    // Also confirm back to sender
+    socket.emit("receive-chat", { ...message, isSelf: true });
+  });
+
   socket.on("disconnect", () => {
     console.log("Socket disconnected:", socket.id);
   });

@@ -168,4 +168,34 @@ router.post("/:documentId/allow-user", async (req, res) => {
   }
 });
 
+// Delete a document (owner only).
+router.delete("/:documentId", async (req, res) => {
+  try {
+    const { requesterEmail } = req.query;
+
+    if (!requesterEmail) {
+      return res.status(400).json({ message: "requesterEmail is required" });
+    }
+
+    const doc = await Document.findOne({ documentId: req.params.documentId });
+
+    if (!doc) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    if (doc.createdBy !== requesterEmail) {
+      return res.status(403).json({ message: "Only owner can delete document" });
+    }
+
+    await Document.deleteOne({ documentId: req.params.documentId });
+
+    res.json({
+      message: "Document deleted successfully",
+      documentId: req.params.documentId
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Could not delete document", error: error.message });
+  }
+});
+
 module.exports = router;
