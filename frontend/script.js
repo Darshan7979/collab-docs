@@ -137,43 +137,86 @@ async function apiRequest(path, options = {}) {
 
 function createDocCard(doc, options = {}) {
   const { onRename, onCopyLink, onDelete, index = 0 } = options;
-  const article = document.createElement("article");
-  article.className = "doc-card";
-  article.style.setProperty("--card-index", String(index));
+  const row = document.createElement("div");
+  row.className = "doc-row";
+  row.style.setProperty("--row-index", String(index));
 
-  const updatedText = new Date(doc.updatedAt || doc.createdAt).toLocaleString();
+  const colorIndex = index % 6;
+  const updatedDate = new Date(doc.updatedAt || doc.createdAt);
+  const now = new Date();
+  const diffMs = now - updatedDate;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
 
-  article.innerHTML = `
-    <h3 class="doc-title">${doc.title || "Untitled Document"}</h3>
-    <p class="doc-meta">Last updated: ${updatedText}</p>
-    <div class="doc-actions">
-      <button class="btn btn-primary" data-action="open">Open</button>
-      <button class="btn btn-ghost doc-action-btn" data-action="rename">Rename</button>
-      <button class="btn btn-ghost doc-action-btn" data-action="copy-link">Copy Link</button>
-      <button class="btn btn-ghost doc-action-btn doc-action-delete" data-action="delete">Delete</button>
+  let timeText;
+  if (diffMins < 1) timeText = "Just now";
+  else if (diffMins < 60) timeText = `${diffMins}m ago`;
+  else if (diffHours < 24) timeText = `${diffHours}h ago`;
+  else if (diffDays < 7) timeText = `${diffDays}d ago`;
+  else timeText = updatedDate.toLocaleDateString();
+
+  row.innerHTML = `
+    <div class="doc-icon doc-icon-${colorIndex}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+    </div>
+    <div class="doc-info">
+      <span class="doc-name">${doc.title || "Untitled Document"}</span>
+      <span class="doc-time">Edited ${timeText}</span>
+    </div>
+    <div class="doc-row-actions">
+      <button class="doc-action" data-action="open" data-tooltip="Open">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
+      <button class="doc-action" data-action="rename" data-tooltip="Rename">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      <button class="doc-action" data-action="copy-link" data-tooltip="Copy link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </button>
+      <button class="doc-action danger" data-action="delete" data-tooltip="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
     </div>
   `;
 
-  article.querySelector('[data-action="open"]').addEventListener("click", () => {
+  // Clicking the row opens the document
+  row.addEventListener("click", (e) => {
+    // Don't navigate if an action button was clicked
+    if (e.target.closest(".doc-action")) return;
     window.location.href = `editor.html?docId=${doc.documentId}`;
   });
 
-  article.querySelector('[data-action="rename"]').addEventListener("click", async () => {
+  row.querySelector('[data-action="open"]').addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.location.href = `editor.html?docId=${doc.documentId}`;
+  });
+
+  row.querySelector('[data-action="rename"]').addEventListener("click", async (e) => {
+    e.stopPropagation();
     if (!onRename) return;
     await onRename(doc);
   });
 
-  article.querySelector('[data-action="copy-link"]').addEventListener("click", async () => {
+  row.querySelector('[data-action="copy-link"]').addEventListener("click", async (e) => {
+    e.stopPropagation();
     if (!onCopyLink) return;
     await onCopyLink(doc);
   });
 
-  article.querySelector('[data-action="delete"]').addEventListener("click", async () => {
+  row.querySelector('[data-action="delete"]').addEventListener("click", async (e) => {
+    e.stopPropagation();
     if (!onDelete) return;
     await onDelete(doc);
   });
 
-  return article;
+  return row;
 }
 
 function setupDashboard() {
@@ -197,11 +240,28 @@ function setupDashboard() {
     async function loadDocuments() {
       try {
         docListEl.innerHTML = "";
+        const docCountEl = document.querySelector(".js-doc-count");
 
         const docs = await apiRequest(`/api/documents?createdBy=${encodeURIComponent(user.email)}`);
 
+        if (docCountEl) {
+          docCountEl.textContent = docs.length
+            ? `${docs.length} document${docs.length !== 1 ? "s" : ""}`
+            : "";
+        }
+
         if (!docs.length) {
-          docListEl.innerHTML = "<p>No documents yet. Create your first one.</p>";
+          docListEl.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <p class="empty-title">No documents yet</p>
+              <p class="empty-desc">Create your first document to get started with real-time collaboration.</p>
+            </div>`;
           return;
         }
 
